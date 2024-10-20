@@ -1,5 +1,13 @@
 # B760-DS3H-DDR4-unraid
-B760 DS3H DDR4 unraid
+
+This is my notes to (try to) make an efficient unraid server using Gigabyte B760 DS3H DDR4.
+
+## TODO list
+- Add BIOS configuration
+- Redo tests
+- Debug X710-DA2 C6 to achieve C10
+- Debug pcie 16x power saving problems
+- Add new samsung SSD M2 raid1 cache
 
 ## Setup
 
@@ -51,9 +59,9 @@ Very cheap but does not have any power savings activated and runs as hot as a vo
 
 Will be replaced by 2x Samsung 990 EVO 2TB
 
-## Estimation of power consumption
+## Estimation of power consumption and C-states
 
-> **_NOTE:_** I will do more tests when i add the Samsung SSD 2TB M2
+> **_NOTE:_** I will do redo the tests when i add the Samsung SSD 2TB M2
 
 base = PSU + Gigabyte B760 DS3H DDR4 BIOS + 1x Be Quiet Pure Wings 2 4-pin PWM 
 
@@ -77,8 +85,7 @@ With everything connected (base + ASM1166 + Intel X710-DA2 + Samsung SSD 970 EVO
 This motherboard is very efficient but there are some things that i need to debug.
 
 1) Using the 16x pcie port does seem to block power saving. It is now empty and i use other pcie ports for the add-on cards.
-2) Intel X710-DA2 was Dell branded when i bought it. Iflashed it to OEM. It should achieve C10 but it is stuck at C6 and limits everything else.
-
+2) Intel X710-DA2 was Dell branded when i bought it. I flashed it to OEM. It should achieve C10 but it is stuck at C6 and limits everything else.
 
 ## Powertop usage
 
@@ -138,7 +145,7 @@ echo auto | tee /sys/bus/pci/devices/????:??:??.?/power/control
 # Runtime PM for ATA devices
 echo auto | tee /sys/bus/pci/devices/????:??:??.?/ata*/power/control
 ```
-Use the plugin `User scripts` to execute this every time unraid starts
+Use the plugin `User scripts` to execute one of the 2 scripts every time unraid starts
 
 ![image](https://github.com/user-attachments/assets/321f397b-471b-4743-a1f8-f660d4526ae7)
 
