@@ -19,7 +19,7 @@ Software:
 - Unraid 6.12.13
 
 Hardware:
-- Gigabyte B760 DS3H DDR4 BIOS <s>F10d</s> *F11* https://www.gigabyte.com/Motherboard/B760-DS3H-DDR4-rev-10#kf
+- Gigabyte B760 DS3H DDR4 BIOS <s>F10d</s> *F11* [link](https://www.gigabyte.com/Motherboard/B760-DS3H-DDR4-rev-10#kf)
 - i5-13500
 - 32Gb DDR4 3200
 - Add-on cards
