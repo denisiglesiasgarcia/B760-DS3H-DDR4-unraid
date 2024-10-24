@@ -204,7 +204,7 @@ lspci -vv | awk '/ASPM/{print $0}' RS= | grep --color -P '(^[a-z0-9:.]+|ASPM )'
 ```
 
 ## Sources
-I want to thank every person that shared his/her knowledge with the rest of us. This is sources i used:
+I want to thank every person that shared his/her knowledge with the rest of us. This is the sources i used:
 - https://forums.unraid.net/topic/98070-reduce-power-consumption-with-powertop/
 - https://forums.unraid.net/topic/156160-gigabyte-b760m-ds3h-ddr4-verschiedene-messungen-werte/
 - https://forums.unraid.net/topic/141770-asm1166-flashen-mit-der-firmware-der-silverstone-ecs06-karte-sata-kontroller/
