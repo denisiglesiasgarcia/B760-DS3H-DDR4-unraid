@@ -39,6 +39,15 @@ Hardware:
 - PSU
   - Seasonic Focus PX (750 W)
 
+#### Bios settings
+
+![04CBD157-37C9-400B-85CC-EC78CE7B10FD_1_105_c](https://github.com/user-attachments/assets/6b4d6ab7-1da3-4f6c-8e8a-ac264f7aaf2b)
+![675DF690-384E-4971-AA91-D2FD62F5647B_1_105_c](https://github.com/user-attachments/assets/3d1e8ff4-b8e4-4535-9a4e-fbcdfd5a30f3)
+![3DB7597F-2DA1-4A03-913C-F409EDA961F0_1_105_c](https://github.com/user-attachments/assets/1e9bc5d4-dad3-4f0e-806d-8cb2b015e3d9)
+![327AE0C8-8D36-42CE-872C-D1C19FBF4699_1_105_c](https://github.com/user-attachments/assets/ae9e4cb3-8397-42cd-800d-293feef6a93c)
+![980CB055-2729-4316-A1F9-384FB5775C30_1_105_c](https://github.com/user-attachments/assets/06a2f26d-88b4-4b01-9fb8-bef71657c108)
+
+
 ### What i tried and it did not work as expected
 
 #### IBM ServeRAID M1015
@@ -65,20 +74,13 @@ Will be replaced by 2x Samsung 990 EVO 2TB
 
 base = PSU + Gigabyte B760 DS3H DDR4 BIOS + 1x Be Quiet Pure Wings 2 4-pin PWM 
 
-| Software | Hardware  | Power usage estimation (W) | max C-state  | Comments |
-|----------|-----------|-----------------|--------------|----------|
-| Unraid 7.0.0 beta3 | base | 10-17 | C10 |   |
-| Unraid 7.0.0 beta3 | base + LSI 9211-8i IT |  30 | 0 | |
-| Unraid 7.0.0 beta3 | base + Solarflare 10GB | 30 | 0 | |
-| Unraid 7.0.0 beta3 | base + LSI 9211-8i IT + Solarflare 10GB | 30-40 | 0 | |
-| Unraid 7.0.0 beta3 | base + LSI 9211-8i IT + Solarflare 10GB + Kingston NV2 4TB M.2 SSD | more than 40 | 0 | Kingston NV2 4TB does not support ASPM. Runs very hot. |
-| Unraid 7.0.0 beta3 | base + ASM1166 | 17 | - |  C8 or C10 i don't remember. ASM1166 should add 2W-4W to the base consumption. |
-| Unraid 7.0.0 beta3 | base + Samsung SSD 970 EVO Plus 500GB M.2 | 10-17 | C10 | Samsung SSD 970 EVO Plus 500GB M.2 does not increment the power consumption at idle by more than 1W and the difference between M.2 slots is negligable |
-| Unraid 7.0.0 beta3 | base + Intel X710-DA2 | - | C6 | Runs cool. |
-| Unraid 7.0.0 beta3 | base + ASM1166 + Intel X710-DA2 | - | C6 |  |
-| Unraid 7.0.0 beta3 | base + ASM1166 + Intel X710-DA2 + Samsung SSD 970 EVO Plus 500GB M.2 | 27 | C6 |  |
+| Software | Hardware  | max C-state | Power usage estimation (W) | Image | Comments |
+|----------|-----------|-----------------|--------------|----------|----|
+| Unraid 6.12.13 | base + realtek 1G activated | C10| 17-18 | 1  |  |
 
-With everything connected (base + ASM1166 + Intel X710-DA2 + Samsung SSD 970 EVO Plus 500GB M.2 + SSD cache + all ventilation + all HD spinned down) it idles around 30W and reaches C6. It needs more consistent tests because some power consumption values are probably not right.
+
+Image 1
+![0492BF14-92CB-4E26-82C3-6EDCBEE78EEB_1_105_c](https://github.com/user-attachments/assets/80977512-18f0-4b40-86d6-d01c2717760f)
 
 ### Things that don't work as expected right now
 
