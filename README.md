@@ -208,5 +208,6 @@ I want to thank every person that shared his/her knowledge with the rest of us. 
 - https://forums.unraid.net/topic/98070-reduce-power-consumption-with-powertop/
 - https://forums.unraid.net/topic/156160-gigabyte-b760m-ds3h-ddr4-verschiedene-messungen-werte/
 - https://forums.unraid.net/topic/141770-asm1166-flashen-mit-der-firmware-der-silverstone-ecs06-karte-sata-kontroller/
+- https://forums.unraid.net/topic/156160-gigabyte-b760m-ds3h-ddr4-verschiedene-messungen-werte/#comment-1392769
 - https://docs.phil-barker.com/posts/upgrading-ASM1166-firmware-for-unraid/
 - https://gist.github.com/mietzen/736583d37a1d370273c0775aaaa57aa5
