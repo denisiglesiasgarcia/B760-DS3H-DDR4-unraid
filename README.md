@@ -44,12 +44,15 @@ Hardware:
 
 #### Bios settings
 
-![04CBD157-37C9-400B-85CC-EC78CE7B10FD_1_105_c](https://github.com/user-attachments/assets/6b4d6ab7-1da3-4f6c-8e8a-ac264f7aaf2b)
-![675DF690-384E-4971-AA91-D2FD62F5647B_1_105_c](https://github.com/user-attachments/assets/3d1e8ff4-b8e4-4535-9a4e-fbcdfd5a30f3)
-![3DB7597F-2DA1-4A03-913C-F409EDA961F0_1_105_c](https://github.com/user-attachments/assets/1e9bc5d4-dad3-4f0e-806d-8cb2b015e3d9)
-![327AE0C8-8D36-42CE-872C-D1C19FBF4699_1_105_c](https://github.com/user-attachments/assets/ae9e4cb3-8397-42cd-800d-293feef6a93c)
-![980CB055-2729-4316-A1F9-384FB5775C30_1_105_c](https://github.com/user-attachments/assets/06a2f26d-88b4-4b01-9fb8-bef71657c108)
+![04CBD157-37C9-400B-85CC-EC78CE7B10FD_1_105_c](https://github.com/user-attachments/assets/4e4424c2-e512-4b68-b93c-9b26badd64a1)
 
+![980CB055-2729-4316-A1F9-384FB5775C30_1_105_c](https://github.com/user-attachments/assets/f7c61b01-d39c-4824-9345-30951f8f0af0)
+
+![327AE0C8-8D36-42CE-872C-D1C19FBF4699_1_105_c](https://github.com/user-attachments/assets/4700b1cb-6ce2-4527-89b0-96c12224d314)
+
+![3DB7597F-2DA1-4A03-913C-F409EDA961F0_1_105_c](https://github.com/user-attachments/assets/24bd94f1-96c6-40d8-a855-9799b360f6ec)
+
+![675DF690-384E-4971-AA91-D2FD62F5647B_1_105_c](https://github.com/user-attachments/assets/5c7cb6be-ea5d-48e1-a206-b2186bf9eb02)
 
 ### What i tried and it did not work as expected
 
