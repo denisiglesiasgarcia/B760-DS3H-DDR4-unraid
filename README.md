@@ -2,6 +2,9 @@
 
 This is my notes to (try to) make an efficient unraid server using Gigabyte B760 DS3H DDR4.
 
+## Table of Contents  
+
+
 ## TODO list
 - <s>Add BIOS configuration</s>
 - <s>Redo tests</s>
@@ -79,7 +82,7 @@ Replaced by Samsung 990 Pro 2TB
 base = PSU + Gigabyte B760 DS3H DDR4 BIOS + 1x Be Quiet Pure Wings 2 4-pin PWM 
 
 Test number | Software | Hardware  | max C-state | Idle power usage estimation (W) | Image | Comments |
-|----------|----------|-----------|-----------------|--------------|----------|----|
+|:---------:|:--------:|-----------|:-----------:|:-------------------------------:|:-----:|----------|
 |A| Unraid 6.12.13 | base + realtek 1G activated | C3 | 17-18 | 1  | Realtek NIC seems to have a bug in Unraid and limits ASPM |
 |B| Unraid 6.12.13 | base + realtek 1G script| C10 | 12-13 | 2  | Use this [commands](#Realtek-ethernet) to activate C10 |
 |C| Unraid 6.12.13 | base + realtek 1G disabled in bios + X710-DA2 (pcie1x) | C10 | 15 | 3  | pcie1x for X710-DA2 works fine |
