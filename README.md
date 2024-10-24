@@ -2,27 +2,46 @@
 
 This is my notes to (try to) make an efficient unraid server using Gigabyte B760 DS3H DDR4.
 
-## Table of Contents  
+## Table of Contents
 
+- [TODO list](#todo-list)
+- [Setup](#setup)
+  - [Now](#now)
+  - [Bios settings](#bios-settings)
+- [What i tried and it did not work as expected](#what-i-tried-and-it-did-not-work-as-expected)
+  - [IBM ServeRAID M1015](#ibm-serveraid-m1015)
+  - [Solarflare 10GB SF329-9021-R7.4](#solarflare-10gb-sf329-9021-r74)
+  - [Kingston NV2 4TB M.2 SSD](#kingston-nv2-4tb-m2-ssd)
+- [Estimation of power consumption and C-states](#estimation-of-power-consumption-and-c-states)
+- [Things that don't work as expected right now](#things-that-dont-work-as-expected-right-now)
+- [Powertop usage](#powertop-usage)
+- [Realtek ethernet](#realtek-ethernet)
+- [ASPM](#aspm)
+- [Sources](#sources)
 
 ## TODO list
-- <s>Add BIOS configuration</s>
-- <s>Redo tests</s>
-- <s>Debug X710-DA2 C6 to achieve C10</s>
+
+- ~~Add BIOS configuration~~
+- ~~Redo tests~~
+- ~~Debug X710-DA2 C6 to achieve C10~~
 - Debug pcie 16x power saving problems
-- <s>Add new samsung SSD M2 cache</s>
+- ~~Add new samsung SSD M2 cache~~
 
 ## Setup
 
 ### Now
+
 Power meter
+
 - Steffen [link](https://www.digitec.ch/fr/s1/product/steffen-appareil-de-mesure-denergie-numerique-ip20-compteur-de-courant-5807865)
 
 Software:
+
 - Unraid 6.12.13
 
 Hardware:
-- Gigabyte B760 DS3H DDR4 BIOS <s>F10d</s> *F11* [link](https://www.gigabyte.com/Motherboard/B760-DS3H-DDR4-rev-10#kf)
+
+- Gigabyte B760 DS3H DDR4 BIOS ~~F10d~~ *F11* [link](https://www.gigabyte.com/Motherboard/B760-DS3H-DDR4-rev-10#kf)
 - i5-13500
 - 32Gb DDR4 3200
 - Add-on cards
@@ -79,12 +98,12 @@ Replaced by Samsung 990 Pro 2TB
 
 ## Estimation of power consumption and C-states
 
-base = PSU + Gigabyte B760 DS3H DDR4 BIOS + 1x Be Quiet Pure Wings 2 4-pin PWM 
+base = PSU + Gigabyte B760 DS3H DDR4 BIOS + 1x Be Quiet Pure Wings 2 4-pin PWM
 
-Test number | Software | Hardware  | max C-state | Idle power usage estimation (W) | Image | Comments |
-|:---------:|:--------:|-----------|:-----------:|:-------------------------------:|:-----:|----------|
+| Test number | Software | Hardware  | max C-state | Idle power usage estimation (W) | Image | Comments |
+|:-----------:|:--------:|-----------|:-----------:|:-------------------------------:|:-----:|----------|
 |A| Unraid 6.12.13 | base + realtek 1G activated | C3 | 17-18 | 1  | Realtek NIC seems to have a bug in Unraid and limits ASPM |
-|B| Unraid 6.12.13 | base + realtek 1G script| C10 | 12-13 | 2  | Use this [commands](#Realtek-ethernet) to activate C10 |
+|B| Unraid 6.12.13 | base + realtek 1G script| C10 | 12-13 | 2  | Use this [commands](#realtek-ethernet) to activate C10 |
 |C| Unraid 6.12.13 | base + realtek 1G disabled in bios + X710-DA2 (pcie1x) | C10 | 15 | 3  | pcie1x for X710-DA2 works fine |
 |D| Unraid 6.12.13 | base + realtek 1G disabled in bios | - | 11-12 | - | This test is to have an idea of the impact of the realtek NIC, it seems around 1W |
 |E| Unraid 6.12.13 | base + realtek 1G disabled in bios + X710-DA2 (pcie16x) | C2 | 23-24 | 4 | The placement in the pcie 16x breaks C10, this is the pcie slot fo the CPU. Avoid this slot if you want achieve C10 |
@@ -125,11 +144,10 @@ Image 8
 
 ![IMG_6369](https://github.com/user-attachments/assets/214bc226-e0cd-4be0-a031-c47d95a971fc)
 
-
 ### Things that don't work as expected right now
 
 1) Using the 16x pcie port does seem to block power saving. It is now empty and i use other pcie ports for the add-on cards. Upgrading BIOS to F11 has not solved this.
-2) <s>Intel X710-DA2 was Dell branded when i bought it. I flashed it to OEM. It should achieve C10 but it is stuck at C6 and limits everything else.</s> I upgraded the MB BIOS to F11 and it works as expected!
+2) ~~Intel X710-DA2 was Dell branded when i bought it. I flashed it to OEM. It should achieve C10 but it is stuck at C6 and limits everything else.~~ I upgraded the MB BIOS to F11 and it works as expected!
 
 ## Powertop usage
 
@@ -143,7 +161,7 @@ Activate auto-tune
 powertop --auto-tune
 ```
 
-Or use the recommendations of the forum user mgutt instead of `powertop --auto-tune` https://forums.unraid.net/topic/98070-reduce-power-consumption-with-powertop/
+Or use the recommendations of the forum user mgutt instead of `powertop --auto-tune` [Source](https://forums.unraid.net/topic/98070-reduce-power-consumption-with-powertop/)
 
 ```bash
 # -------------------------------------------------
@@ -189,6 +207,7 @@ echo auto | tee /sys/bus/pci/devices/????:??:??.?/power/control
 # Runtime PM for ATA devices
 echo auto | tee /sys/bus/pci/devices/????:??:??.?/ata*/power/control
 ```
+
 Use the plugin `User scripts` to execute one of the 2 scripts every time unraid starts
 
 ![image](https://github.com/user-attachments/assets/321f397b-471b-4743-a1f8-f660d4526ae7)
@@ -205,12 +224,15 @@ setpci -s 00:1c.2 0x50.B=0x42
 ### ASPM
 
 Check ASPM status
+
 ```bash
 lspci -vv | awk '/ASPM/{print $0}' RS= | grep --color -P '(^[a-z0-9:.]+|ASPM )'
 ```
 
 ## Sources
+
 I want to thank every person that shared his/her knowledge with the rest of us. This is the sources i used:
+
 - https://forums.unraid.net/topic/98070-reduce-power-consumption-with-powertop/
 - https://forums.unraid.net/topic/156160-gigabyte-b760m-ds3h-ddr4-verschiedene-messungen-werte/
 - https://forums.unraid.net/topic/141770-asm1166-flashen-mit-der-firmware-der-silverstone-ecs06-karte-sata-kontroller/
