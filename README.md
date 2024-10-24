@@ -123,7 +123,7 @@ Image 8
 ### Things that don't work as expected right now
 
 1) Using the 16x pcie port does seem to block power saving. It is now empty and i use other pcie ports for the add-on cards. Upgrading BIOS to F11 has not solved this.
-2) <s>Intel X710-DA2 was Dell branded when i bought it. I flashed it to OEM. It should achieve C10 but it is stuck at C6 and limits everything else.</s> Since i upgraded the MB BIOS to F11 and it works as expected!
+2) <s>Intel X710-DA2 was Dell branded when i bought it. I flashed it to OEM. It should achieve C10 but it is stuck at C6 and limits everything else.</s> I upgraded the MB BIOS to F11 and it works as expected!
 
 ## Powertop usage
 
