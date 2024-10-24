@@ -3,22 +3,25 @@
 This is my notes to (try to) make an efficient unraid server using Gigabyte B760 DS3H DDR4.
 
 ## TODO list
-- Add BIOS configuration
-- Redo tests
-- Debug X710-DA2 C6 to achieve C10
+- <s>Add BIOS configuration</s>
+- <s>Redo tests</s>
+- <s>Debug X710-DA2 C6 to achieve C10</s>
 - Debug pcie 16x power saving problems
-- Add new samsung SSD M2 raid1 cache
+- <s>Add new samsung SSD M2 cache</s>
 
 ## Setup
 
 ### Now
+Power meter
+- Steffen [link](https://www.digitec.ch/fr/s1/product/steffen-appareil-de-mesure-denergie-numerique-ip20-compteur-de-courant-5807865)
+
 Software:
-- Unraid 7.0.0 beta3
+- Unraid 6.12.13
 
 Hardware:
-- Gigabyte B760 DS3H DDR4 BIOS F10d https://www.gigabyte.com/Motherboard/B760-DS3H-DDR4-rev-10#kf
+- Gigabyte B760 DS3H DDR4 BIOS <s>F10d</s> *F11* https://www.gigabyte.com/Motherboard/B760-DS3H-DDR4-rev-10#kf
 - i5-13500
-- 64Gb DDR4 3600
+- 32Gb DDR4 3200
 - Add-on cards
   - Intel Ethernet CNA X710-DA2 brand Dell
     - Used this [tutorial](https://gist.github.com/mietzen/736583d37a1d370273c0775aaaa57aa5) to flash it and activate all the functionalities
@@ -28,7 +31,7 @@ Hardware:
     - [ebay](https://www.ebay.fr/itm/355366723386)
 - Storage
   - Samsung SSD 970 EVO Plus 500GB M.2 as cache for appdata/system
-  - SSD SATA 512GB as cache for rest of data
+  - Samsung SSD 990 Pro 2TB M.2 as cache for the rest
   - 2x Seagate Exos X16 14TB as parity
   - 4x Toshiba N300 6TB
   - 2x Seagate Desktop 6TB
@@ -58,25 +61,31 @@ Replaced by the ASM1166.
 
 #### Solarflare 10GB SF329-9021-R7.4
 
-This [card](https://www.ebay.fr/itm/193363150794) is an excellent card and works out of the box in everything i tried. Not power savings friendly. Runs very hot. Power usage estimation is around 10-20W. It blocks the C-state of the rest, so it increments significatively power usage.
+This [card](https://www.ebay.fr/itm/193363150794) is an excellent card and works out of the box in everything i tried. Not power savings friendly. Runs very hot. Power usage estimation is around 10-20W. It blocks the C-state of the rest, so it increments significatively power usage of all the system.
 
 Replaced by the Intel X710-DA2
 
 #### Kingston NV2 4TB M.2 SSD
 
-Very cheap but does not have any power savings activated and runs as hot as a volcano. Not recommended. Was used as cache for everything.
+Very cheap but does not have any power savings activated and runs as hot as a volcano. Not recommended. Was used as cache for everything. Limited to C2.
 
-Will be replaced by 2x Samsung 990 EVO 2TB
+Replaced by Samsung 990 Pro 2TB
 
 ## Estimation of power consumption and C-states
 
 base = PSU + Gigabyte B760 DS3H DDR4 BIOS + 1x Be Quiet Pure Wings 2 4-pin PWM 
 
-| Software | Hardware  | max C-state | Power usage estimation (W) | Image | Comments |
-|----------|-----------|-----------------|--------------|----------|----|
-| Unraid 6.12.13 | base + realtek 1G activated | C3 | 17-18 | 1  | Realtek NIC seems to have a bug in Unraid and limits ASPM |
-| Unraid 6.12.13 | base + realtek 1G disabled | C10 | 12-13 | 2  | Use this [commands](#Realtek-ethernet) to activate C10 |
-
+Test number | Software | Hardware  | max C-state | Idle power usage estimation (W) | Image | Comments |
+|----------|----------|-----------|-----------------|--------------|----------|----|
+|A| Unraid 6.12.13 | base + realtek 1G activated | C3 | 17-18 | 1  | Realtek NIC seems to have a bug in Unraid and limits ASPM |
+|B| Unraid 6.12.13 | base + realtek 1G script| C10 | 12-13 | 2  | Use this [commands](#Realtek-ethernet) to activate C10 |
+|C| Unraid 6.12.13 | base + realtek 1G disabled in bios + X710-DA2 (pcie1x) | C10 | 15 | 3  | pcie1x for X710-DA2 works fine |
+|D| Unraid 6.12.13 | base + realtek 1G disabled in bios | - | 11-12 | - | This test is to have an idea of the impact of the realtek NIC, it seems around 1W |
+|E| Unraid 6.12.13 | base + realtek 1G disabled in bios + X710-DA2 (pcie16x) | C2 | 23-24 | 4 | The placement in the pcie 16x breaks C10, this is the pcie slot fo the CPU. Avoid this slot if you want achieve C10 |
+|F| Unraid 6.12.13 | base + realtek 1G disabled in bios + X710-DA2 (pcie1x) + ASM1166(pcie1x) | C10 | 15-16 | 5 | The ASM1166 does not increment significantly power usage, maybe around 1-2W |
+|G| Unraid 6.12.13 | base + realtek 1G disabled in bios + X710-DA2 (pcie1x) + ASM1166(pcie1x) + SSD M.2 Samsung 500G (slot chipset) | C10 | 16 | 6 |  |
+|H| Unraid 6.12.13 | base + realtek 1G disabled in bios + X710-DA2 (pcie1x) + ASM1166(pcie1x) + SSD M.2 Samsung 500GB (slot chipset) + SSD M.2 Samsung 2TB (slot CPU) | C10 | 16 | 7 | Adding SSD M.2 has negligable impact on power consumption. Slot does not make a difference. |
+|I| Unraid 6.12.13 | base + realtek 1G disabled in bios + X710-DA2 (pcie1x) + ASM1166(pcie1x) + SSD M.2 Samsung 500GB (slot chipset) + SSD M.2 Samsung 2TB (slot CPU) + 4 HD to SATA MB + 4 HD to ASM1166 | C10 | 22-24 | 8 |  |
 
 Image 1
 
@@ -108,14 +117,13 @@ Image 7
 
 Image 8
 
+![IMG_6369](https://github.com/user-attachments/assets/214bc226-e0cd-4be0-a031-c47d95a971fc)
 
 
 ### Things that don't work as expected right now
 
-This motherboard is very efficient but there are some things that i need to debug.
-
-1) Using the 16x pcie port does seem to block power saving. It is now empty and i use other pcie ports for the add-on cards.
-2) Intel X710-DA2 was Dell branded when i bought it. I flashed it to OEM. It should achieve C10 but it is stuck at C6 and limits everything else.
+1) Using the 16x pcie port does seem to block power saving. It is now empty and i use other pcie ports for the add-on cards. Upgrading BIOS to F11 has not solved this.
+2) <s>Intel X710-DA2 was Dell branded when i bought it. I flashed it to OEM. It should achieve C10 but it is stuck at C6 and limits everything else.</s> Since i upgraded the MB BIOS to F11 and it works as expected!
 
 ## Powertop usage
 
@@ -194,3 +202,11 @@ Check ASPM status
 ```bash
 lspci -vv | awk '/ASPM/{print $0}' RS= | grep --color -P '(^[a-z0-9:.]+|ASPM )'
 ```
+
+## Sources
+I want to thank every person that shared his/her knowledge with the rest of us. This is sources i used:
+- https://forums.unraid.net/topic/98070-reduce-power-consumption-with-powertop/
+- https://forums.unraid.net/topic/156160-gigabyte-b760m-ds3h-ddr4-verschiedene-messungen-werte/
+- https://forums.unraid.net/topic/141770-asm1166-flashen-mit-der-firmware-der-silverstone-ecs06-karte-sata-kontroller/
+- https://docs.phil-barker.com/posts/upgrading-ASM1166-firmware-for-unraid/
+- https://gist.github.com/mietzen/736583d37a1d370273c0775aaaa57aa5
