@@ -13,10 +13,11 @@ This is my notes to (try to) make an efficient unraid server using Gigabyte B760
   - [Solarflare 10GB SF329-9021-R7.4](#solarflare-10gb-sf329-9021-r74)
   - [Kingston NV2 4TB M.2 SSD](#kingston-nv2-4tb-m2-ssd)
   - [Still doesn't work as expected](#still-doesnt-work-as-expected)
+- [How to activate power savings](#how-to-activate-power-savings)
+  - [Powertop usage](#powertop-usage)
+  - [Realtek ethernet](#realtek-ethernet)
+  - [ASPM](#aspm)
 - [Estimation of power consumption and C-states](#estimation-of-power-consumption-and-c-states)
-- [Powertop usage](#powertop-usage)
-- [Realtek ethernet](#realtek-ethernet)
-- [ASPM](#aspm)
 - [Sources](#sources)
 
 ## TODO list
@@ -178,53 +179,7 @@ else
 fi
 ```
 
-## Estimation of power consumption and C-states
 
-base = PSU + Gigabyte B760 DS3H DDR4 BIOS + 1x Be Quiet Pure Wings 2 4-pin PWM
-
-| Test number | Software | Hardware  | max C-state | Idle power usage estimation (W) | Image | Comments |
-|:-----------:|:--------:|-----------|:-----------:|:-------------------------------:|:-----:|----------|
-|A| Unraid 6.12.13 | base + realtek 1G activated | C3 | 17-18 | 1  | Realtek NIC seems to have a bug in Unraid and limits ASPM |
-|B| Unraid 6.12.13 | base + realtek 1G script| C10 | 12-13 | 2  | Use this [commands](#realtek-ethernet) to activate C10 |
-|C| Unraid 6.12.13 | base + realtek 1G disabled in bios + X710-DA2 (pcie1x) | C10 | 15 | 3  | pcie1x for X710-DA2 works fine |
-|D| Unraid 6.12.13 | base + realtek 1G disabled in bios | - | 11-12 | - | This test is to have an idea of the impact of the realtek NIC, it seems around 1W |
-|E| Unraid 6.12.13 | base + realtek 1G disabled in bios + X710-DA2 (pcie16x) | C2 | 23-24 | 4 | The placement in the pcie 16x breaks C10, this is the pcie slot fo the CPU. Avoid this slot if you want achieve C10 |
-|F| Unraid 6.12.13 | base + realtek 1G disabled in bios + X710-DA2 (pcie1x) + ASM1166(pcie1x) | C10 | 15-16 | 5 | The ASM1166 does not increment significantly power usage, maybe around 1-2W |
-|G| Unraid 6.12.13 | base + realtek 1G disabled in bios + X710-DA2 (pcie1x) + ASM1166(pcie1x) + SSD M.2 Samsung 500G (slot chipset) | C10 | 16 | 6 |  |
-|H| Unraid 6.12.13 | base + realtek 1G disabled in bios + X710-DA2 (pcie1x) + ASM1166(pcie1x) + SSD M.2 Samsung 500GB (slot chipset) + SSD M.2 Samsung 2TB (slot CPU) | C10 | 16 | 7 | Adding SSD M.2 has negligable impact on power consumption. Slot does not make a difference. |
-|I| Unraid 6.12.13 | base + realtek 1G disabled in bios + X710-DA2 (pcie1x) + ASM1166(pcie1x) + SSD M.2 Samsung 500GB (slot chipset) + SSD M.2 Samsung 2TB (slot CPU) + 4 HD to SATA MB + 4 HD to ASM1166 | C10 | 22-24 | 8 |  |
-
-Image 1
-
-![0492BF14-92CB-4E26-82C3-6EDCBEE78EEB_1_105_c](https://github.com/user-attachments/assets/80977512-18f0-4b40-86d6-d01c2717760f)
-
-Image 2
-
-![0CB6FA03-20C7-40FC-89C1-0304568932CD_1_105_c](https://github.com/user-attachments/assets/c67ce8fd-43a8-4bad-9d0b-f2cdf0b379e3)
-
-Image 3
-
-![87D65579-3ABC-4E11-9886-CDD22ABE4607_1_105_c](https://github.com/user-attachments/assets/b069d77c-e16c-432f-aebc-d23dad7f0cb0)
-
-Image 4
-
-![2B6D7CFD-B57A-4C78-915D-A504D0597B88_1_105_c](https://github.com/user-attachments/assets/8d1b9031-6f17-4996-9076-c1342c7ff243)
-
-Image 5
-
-![D8B1C282-D188-4D8A-ABAC-63E6542C0CEE_1_105_c](https://github.com/user-attachments/assets/4f508f8a-b7d7-4bee-885c-4ba229e03f50)
-
-Image 6
-
-![A4E7ECE9-3E60-4405-A1A9-63000C0493DA_1_105_c](https://github.com/user-attachments/assets/5d79f41b-01d4-46d6-97d5-85a9b3d5ec0a)
-
-Image 7
-
-![E67CD7AB-A4BF-41D9-9622-B8F3795384C9_1_105_c](https://github.com/user-attachments/assets/ed35b30e-cdcf-4fa6-997e-626d2e0a5cee)
-
-Image 8
-
-![IMG_6369](https://github.com/user-attachments/assets/214bc226-e0cd-4be0-a031-c47d95a971fc)
 
 ### What i tried and it did not work as expected
 
@@ -251,7 +206,9 @@ Replaced by Samsung 990 Pro 2TB
 1) Using the 16x pcie port does seem to block power saving. It is now empty and i use other pcie ports for the add-on cards. Upgrading BIOS to F11 has not solved this.
 2) ~~Intel X710-DA2 was Dell branded when i bought it. I flashed it to OEM. It should achieve C10 but it is stuck at C6 and limits everything else.~~ I upgraded the MB BIOS to F11 and it works as expected!
 
-## Powertop usage
+## How to activate power savings
+
+### Powertop usage
 
 Install powertop using `nerd tools` in Apps
 
@@ -330,6 +287,54 @@ Check ASPM status
 ```bash
 lspci -vv | awk '/ASPM/{print $0}' RS= | grep --color -P '(^[a-z0-9:.]+|ASPM )'
 ```
+
+## Estimation of power consumption and C-states
+
+base = PSU + Gigabyte B760 DS3H DDR4 BIOS + 1x Be Quiet Pure Wings 2 4-pin PWM
+
+| Test number | Software | Hardware  | max C-state | Idle power usage estimation (W) | Image | Comments |
+|:-----------:|:--------:|-----------|:-----------:|:-------------------------------:|:-----:|----------|
+|A| Unraid 6.12.13 | base + realtek 1G activated | C3 | 17-18 | 1  | Realtek NIC seems to have a bug in Unraid and limits ASPM |
+|B| Unraid 6.12.13 | base + realtek 1G script| C10 | 12-13 | 2  | Use this [commands](#realtek-ethernet) to activate C10 |
+|C| Unraid 6.12.13 | base + realtek 1G disabled in bios + X710-DA2 (pcie1x) | C10 | 15 | 3  | pcie1x for X710-DA2 works fine |
+|D| Unraid 6.12.13 | base + realtek 1G disabled in bios | - | 11-12 | - | This test is to have an idea of the impact of the realtek NIC, it seems around 1W |
+|E| Unraid 6.12.13 | base + realtek 1G disabled in bios + X710-DA2 (pcie16x) | C2 | 23-24 | 4 | The placement in the pcie 16x breaks C10, this is the pcie slot fo the CPU. Avoid this slot if you want achieve C10 |
+|F| Unraid 6.12.13 | base + realtek 1G disabled in bios + X710-DA2 (pcie1x) + ASM1166(pcie1x) | C10 | 15-16 | 5 | The ASM1166 does not increment significantly power usage, maybe around 1-2W |
+|G| Unraid 6.12.13 | base + realtek 1G disabled in bios + X710-DA2 (pcie1x) + ASM1166(pcie1x) + SSD M.2 Samsung 500G (slot chipset) | C10 | 16 | 6 |  |
+|H| Unraid 6.12.13 | base + realtek 1G disabled in bios + X710-DA2 (pcie1x) + ASM1166(pcie1x) + SSD M.2 Samsung 500GB (slot chipset) + SSD M.2 Samsung 2TB (slot CPU) | C10 | 16 | 7 | Adding SSD M.2 has negligable impact on power consumption. Slot does not make a difference. |
+|I| Unraid 6.12.13 | base + realtek 1G disabled in bios + X710-DA2 (pcie1x) + ASM1166(pcie1x) + SSD M.2 Samsung 500GB (slot chipset) + SSD M.2 Samsung 2TB (slot CPU) + 4 HD to SATA MB + 4 HD to ASM1166 | C10 | 22-24 | 8 |  |
+
+Image 1
+
+![0492BF14-92CB-4E26-82C3-6EDCBEE78EEB_1_105_c](https://github.com/user-attachments/assets/80977512-18f0-4b40-86d6-d01c2717760f)
+
+Image 2
+
+![0CB6FA03-20C7-40FC-89C1-0304568932CD_1_105_c](https://github.com/user-attachments/assets/c67ce8fd-43a8-4bad-9d0b-f2cdf0b379e3)
+
+Image 3
+
+![87D65579-3ABC-4E11-9886-CDD22ABE4607_1_105_c](https://github.com/user-attachments/assets/b069d77c-e16c-432f-aebc-d23dad7f0cb0)
+
+Image 4
+
+![2B6D7CFD-B57A-4C78-915D-A504D0597B88_1_105_c](https://github.com/user-attachments/assets/8d1b9031-6f17-4996-9076-c1342c7ff243)
+
+Image 5
+
+![D8B1C282-D188-4D8A-ABAC-63E6542C0CEE_1_105_c](https://github.com/user-attachments/assets/4f508f8a-b7d7-4bee-885c-4ba229e03f50)
+
+Image 6
+
+![A4E7ECE9-3E60-4405-A1A9-63000C0493DA_1_105_c](https://github.com/user-attachments/assets/5d79f41b-01d4-46d6-97d5-85a9b3d5ec0a)
+
+Image 7
+
+![E67CD7AB-A4BF-41D9-9622-B8F3795384C9_1_105_c](https://github.com/user-attachments/assets/ed35b30e-cdcf-4fa6-997e-626d2e0a5cee)
+
+Image 8
+
+![IMG_6369](https://github.com/user-attachments/assets/214bc226-e0cd-4be0-a031-c47d95a971fc)
 
 ## Sources
 
