@@ -105,6 +105,10 @@ I run hourly this script using the plugin `User scripts`. There is 2 things to a
 - The path to the cache disk in function `get_cache_usage`. Set to `/mnt/cache`
 - The threshold of % usage of cache to activate the script. The variable is `CACHE_THRESHOLD` in the main function. Set to `80` so it is 80%
 
+<details>
+
+<summary>Click to see script</summary>
+
 ```bash
 #!/bin/bash
 
@@ -185,7 +189,7 @@ else
 fi
 ```
 
-
+</details>
 
 ### What i tried and it did not work as expected
 
@@ -227,6 +231,10 @@ powertop --auto-tune
 ```
 
 Or use the recommendations of the forum user mgutt instead of `powertop --auto-tune` [Source](https://forums.unraid.net/topic/98070-reduce-power-consumption-with-powertop/)
+
+<details>
+
+<summary>Click to see script</summary>
 
 ```bash
 # -------------------------------------------------
@@ -273,6 +281,8 @@ echo auto | tee /sys/bus/pci/devices/????:??:??.?/power/control
 echo auto | tee /sys/bus/pci/devices/????:??:??.?/ata*/power/control
 ```
 
+</details>
+
 Use the plugin `User scripts` to execute one of the 2 scripts every time unraid starts
 
 ![image](https://github.com/user-attachments/assets/321f397b-471b-4743-a1f8-f660d4526ae7)
@@ -310,9 +320,13 @@ base = PSU + Gigabyte B760 DS3H DDR4 BIOS + 1x Be Quiet Pure Wings 2 4-pin PWM
 |H| Unraid 6.12.13 | base + realtek 1G disabled in bios + X710-DA2 (pcie1x) + ASM1166(pcie1x) + SSD M.2 Samsung 500GB (slot chipset) + SSD M.2 Samsung 2TB (slot CPU) | C10 | 16 | 7 | Adding SSD M.2 has negligable impact on power consumption. Slot does not make a difference. |
 |I| Unraid 6.12.13 | base + realtek 1G disabled in bios + X710-DA2 (pcie1x) + ASM1166(pcie1x) + SSD M.2 Samsung 500GB (slot chipset) + SSD M.2 Samsung 2TB (slot CPU) + 4 HD to SATA MB + 4 HD to ASM1166 | C10 | 22-24 | 8 |  |
 
-Image 1
+<details>
+
+<summary>Image 1</summary>
 
 ![0492BF14-92CB-4E26-82C3-6EDCBEE78EEB_1_105_c](https://github.com/user-attachments/assets/80977512-18f0-4b40-86d6-d01c2717760f)
+
+<details>
 
 Image 2
 
