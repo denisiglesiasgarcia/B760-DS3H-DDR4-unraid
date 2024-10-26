@@ -6,14 +6,14 @@ This is my notes to (try to) make an efficient unraid server using Gigabyte B760
 
 - [TODO list](#todo-list)
 - [Setup](#setup)
-  - [Now](#now)
   - [Bios settings](#bios-settings)
+  - [Mover settings](#mover-settings)
 - [What i tried and it did not work as expected](#what-i-tried-and-it-did-not-work-as-expected)
   - [IBM ServeRAID M1015](#ibm-serveraid-m1015)
   - [Solarflare 10GB SF329-9021-R7.4](#solarflare-10gb-sf329-9021-r74)
   - [Kingston NV2 4TB M.2 SSD](#kingston-nv2-4tb-m2-ssd)
+  - [Still doesn't work as expected](#still-doesnt-work-as-expected)
 - [Estimation of power consumption and C-states](#estimation-of-power-consumption-and-c-states)
-- [Things that don't work as expected right now](#things-that-dont-work-as-expected-right-now)
 - [Powertop usage](#powertop-usage)
 - [Realtek ethernet](#realtek-ethernet)
 - [ASPM](#aspm)
@@ -178,26 +178,6 @@ else
 fi
 ```
 
-### What i tried and it did not work as expected
-
-#### IBM ServeRAID M1015
-
-This card was flashed to LSI 9211-8i IT mode using a tutorial similar to [this](https://www.servethehome.com/ibm-serveraid-m1015-part-4/) 10 years ago. This card is great but it is not oriented to power savings, i don't remember in which C-state it blocks. Expected power usage is around 10W plus 1-2W per disk. It runs hot.
-
-Replaced by the ASM1166.
-
-#### Solarflare 10GB SF329-9021-R7.4
-
-This [card](https://www.ebay.fr/itm/193363150794) is an excellent card and works out of the box in everything i tried. Not power savings friendly. Runs very hot. Power usage estimation is around 10-20W. It blocks the C-state of the rest, so it increments significatively power usage of all the system.
-
-Replaced by the Intel X710-DA2
-
-#### Kingston NV2 4TB M.2 SSD
-
-Very cheap but does not have any power savings activated and runs as hot as a volcano. Not recommended. Was used as cache for everything. Limited to C2.
-
-Replaced by Samsung 990 Pro 2TB
-
 ## Estimation of power consumption and C-states
 
 base = PSU + Gigabyte B760 DS3H DDR4 BIOS + 1x Be Quiet Pure Wings 2 4-pin PWM
@@ -246,7 +226,27 @@ Image 8
 
 ![IMG_6369](https://github.com/user-attachments/assets/214bc226-e0cd-4be0-a031-c47d95a971fc)
 
-### Things that don't work as expected right now
+### What i tried and it did not work as expected
+
+#### IBM ServeRAID M1015
+
+This card was flashed to LSI 9211-8i IT mode using a tutorial similar to [this](https://www.servethehome.com/ibm-serveraid-m1015-part-4/) 10 years ago. This card is great but it is not oriented to power savings, i don't remember in which C-state it blocks. Expected power usage is around 10W plus 1-2W per disk. It runs hot.
+
+Replaced by the ASM1166.
+
+#### Solarflare 10GB SF329-9021-R7.4
+
+This [card](https://www.ebay.fr/itm/193363150794) is an excellent card and works out of the box in everything i tried. Not power savings friendly. Runs very hot. Power usage estimation is around 10-20W. It blocks the C-state of the rest, so it increments significatively power usage of all the system.
+
+Replaced by the Intel X710-DA2
+
+#### Kingston NV2 4TB M.2 SSD
+
+Very cheap but does not have any power savings activated and runs as hot as a volcano. Not recommended. Was used as cache for everything. Limited to C2.
+
+Replaced by Samsung 990 Pro 2TB
+
+#### Still doesn't work as expected
 
 1) Using the 16x pcie port does seem to block power saving. It is now empty and i use other pcie ports for the add-on cards. Upgrading BIOS to F11 has not solved this.
 2) ~~Intel X710-DA2 was Dell branded when i bought it. I flashed it to OEM. It should achieve C10 but it is stuck at C6 and limits everything else.~~ I upgraded the MB BIOS to F11 and it works as expected!
