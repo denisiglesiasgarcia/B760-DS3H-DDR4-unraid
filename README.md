@@ -65,6 +65,10 @@ Hardware:
 
 ### Bios settings
 
+<details>
+
+<summary>Bios settings</summary>
+
 > [!NOTE]  
 > You can disable the realtek NIC if you use the X710-DA2.
 
@@ -77,6 +81,8 @@ Hardware:
 ![3DB7597F-2DA1-4A03-913C-F409EDA961F0_1_105_c](https://github.com/user-attachments/assets/24bd94f1-96c6-40d8-a855-9799b360f6ec)
 
 ![675DF690-384E-4971-AA91-D2FD62F5647B_1_105_c](https://github.com/user-attachments/assets/5c7cb6be-ea5d-48e1-a206-b2186bf9eb02)
+
+</details>
 
 ### Mover settings
 
