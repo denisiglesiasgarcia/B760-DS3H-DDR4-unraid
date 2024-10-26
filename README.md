@@ -326,35 +326,63 @@ base = PSU + Gigabyte B760 DS3H DDR4 BIOS + 1x Be Quiet Pure Wings 2 4-pin PWM
 
 ![0492BF14-92CB-4E26-82C3-6EDCBEE78EEB_1_105_c](https://github.com/user-attachments/assets/80977512-18f0-4b40-86d6-d01c2717760f)
 
+</details>
+
 <details>
 
-Image 2
+<summary>Image 2</summary>
 
 ![0CB6FA03-20C7-40FC-89C1-0304568932CD_1_105_c](https://github.com/user-attachments/assets/c67ce8fd-43a8-4bad-9d0b-f2cdf0b379e3)
 
-Image 3
+</details>
+
+<details>
+
+<summary>Image 3</summary>
 
 ![87D65579-3ABC-4E11-9886-CDD22ABE4607_1_105_c](https://github.com/user-attachments/assets/b069d77c-e16c-432f-aebc-d23dad7f0cb0)
 
-Image 4
+</details>
+
+<details>
+
+<summary>Image 4</summary>
 
 ![2B6D7CFD-B57A-4C78-915D-A504D0597B88_1_105_c](https://github.com/user-attachments/assets/8d1b9031-6f17-4996-9076-c1342c7ff243)
 
-Image 5
+</details>
+
+<details>
+
+<summary>Image 5</summary>
 
 ![D8B1C282-D188-4D8A-ABAC-63E6542C0CEE_1_105_c](https://github.com/user-attachments/assets/4f508f8a-b7d7-4bee-885c-4ba229e03f50)
 
-Image 6
+</details>
+
+<details>
+
+<summary>Image 6</summary>
 
 ![A4E7ECE9-3E60-4405-A1A9-63000C0493DA_1_105_c](https://github.com/user-attachments/assets/5d79f41b-01d4-46d6-97d5-85a9b3d5ec0a)
 
-Image 7
+</details>
+
+<details>
+
+<summary>Image 7</summary>
 
 ![E67CD7AB-A4BF-41D9-9622-B8F3795384C9_1_105_c](https://github.com/user-attachments/assets/ed35b30e-cdcf-4fa6-997e-626d2e0a5cee)
 
-Image 8
+</details>
+
+<details>
+
+<summary>Image 8</summary>
 
 ![IMG_6369](https://github.com/user-attachments/assets/214bc226-e0cd-4be0-a031-c47d95a971fc)
+
+</details>
 
 ## Sources
 
