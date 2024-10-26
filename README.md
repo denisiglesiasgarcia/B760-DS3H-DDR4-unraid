@@ -29,8 +29,6 @@ This is my notes to (try to) make an efficient unraid server using Gigabyte B760
 
 ## Setup
 
-### Now
-
 Power meter
 
 - Steffen [link](https://www.digitec.ch/fr/s1/product/steffen-appareil-de-mesure-denergie-numerique-ip20-compteur-de-courant-5807865)
@@ -64,7 +62,10 @@ Hardware:
 - PSU
   - Seasonic Focus PX (750 W)
 
-#### Bios settings
+### Bios settings
+
+> [!NOTE]  
+> You can disable the realtek NIC if you use the X710-DA2.
 
 ![04CBD157-37C9-400B-85CC-EC78CE7B10FD_1_105_c](https://github.com/user-attachments/assets/4e4424c2-e512-4b68-b93c-9b26badd64a1)
 
@@ -75,6 +76,107 @@ Hardware:
 ![3DB7597F-2DA1-4A03-913C-F409EDA961F0_1_105_c](https://github.com/user-attachments/assets/24bd94f1-96c6-40d8-a855-9799b360f6ec)
 
 ![675DF690-384E-4971-AA91-D2FD62F5647B_1_105_c](https://github.com/user-attachments/assets/5c7cb6be-ea5d-48e1-a206-b2186bf9eb02)
+
+### Mover settings
+
+I did not like the way mover was being scheduled. I wanted:
+
+- If mover is not already running and cache usage is over 80%:
+  - Stop all the docker containers
+  - Set tunable `md_write_method` to `reconstruct write` (sometimes called `Turbo write`). This will spin up all the disks and improve mover speed.
+  - Start mover
+  - Set tunable `reconstruct write` to `auto` so disks can spin down again
+  - When finished, start all the docker containers
+- If mover is running do nothing
+- If cache usage is below 80% do nothing
+
+> [!WARNING]  
+> This works fine in 6.12.13, but in the 7.0.0-beta3 *enabling Turbo Write* does not work. When i update to the newer version i will fix this script.
+
+I run hourly this script using the plugin `User scripts`. There is 2 things to adjust:
+
+- The path to the cache disk in function `get_cache_usage`. Set to `/mnt/cache`
+- The threshold of % usage of cache to activate the script. The variable is `CACHE_THRESHOLD` in the main function. Set to `80` so it is 80%
+
+```bash
+#!/bin/bash
+
+# Function to get cache usage percentage. Change cache path if necessary.
+get_cache_usage() {
+    df -h /mnt/cache | awk 'NR==2 {print $5}' | tr -d '%'
+}
+
+# Function to check if mover is already running
+is_mover_running() {
+    pgrep -f "/usr/local/sbin/mover" > /dev/null
+}
+
+# Function to enable Turbo Write
+enable_turbo_write() {
+    echo "Enabling Turbo Write"
+    /usr/local/sbin/mdcmd set md_write_method 1
+}
+
+# Function to disable Turbo Write
+disable_turbo_write() {
+    echo "Disabling Turbo Write"
+    /usr/local/sbin/mdcmd set md_write_method 0
+}
+
+# Function to stop Docker containers and save their state
+stop_docker_containers() {
+    echo "Stopping active Docker containers"
+    docker ps -q > /tmp/active_containers.txt
+    docker stop --time=60 $(docker ps -q)
+}
+
+# Function to start previously active Docker containers
+start_docker_containers() {
+    echo "Starting previously active Docker containers"
+    if [ -f /tmp/active_containers.txt ]; then
+        xargs docker start < /tmp/active_containers.txt
+        rm /tmp/active_containers.txt
+        echo "Successfully started previously active Docker containers"
+    else
+        echo "No record of previously active containers found"
+    fi
+}
+
+# Main script
+CACHE_THRESHOLD=80
+CACHE_USAGE=$(get_cache_usage)
+echo "Cache usage is at ${CACHE_USAGE}%."
+
+if is_mover_running; then
+    echo "Mover is already running. Exiting script."
+    exit 0
+fi
+
+if [ "$CACHE_USAGE" -gt "$CACHE_THRESHOLD" ]; then
+    echo "Cache usage is above ${CACHE_THRESHOLD}%. Starting mover process."
+    
+    stop_docker_containers
+    
+    enable_turbo_write
+    
+    echo "Executing mover"
+    /usr/local/sbin/mover start
+    
+    # Wait for mover to complete
+    while is_mover_running; do
+        echo "Mover is still running. Waiting..."
+        sleep 60
+    done
+    
+    echo "Mover completed."
+    
+    disable_turbo_write
+    
+    start_docker_containers
+else
+    echo "Cache usage is below ${CACHE_THRESHOLD}%. Skipping mover execution."
+fi
+```
 
 ### What i tried and it did not work as expected
 
