@@ -28,6 +28,8 @@ This is my notes to (try to) make an efficient unraid server using Gigabyte B760
 - Debug pcie 16x power saving problems
 - ~~Add new samsung SSD M2 cache~~
 - Add list of apps
+- Add motivation chapter
+- Add more information about what is C-States and this things
 
 ## Setup
 
