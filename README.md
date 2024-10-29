@@ -90,11 +90,12 @@ Hardware:
 I did not like the way mover was being scheduled. I wanted:
 
 - If mover is not already running and cache usage is over 80%:
-  - Stop all the docker containers
+  - Stop all the active docker containers and remember which one was active
   - Set tunable `md_write_method` to `reconstruct write` (sometimes called `Turbo write`). This will spin up all the disks and improve mover speed.
   - Start mover
-  - Set tunable `reconstruct write` to `auto` so disks can spin down again
-  - When finished, start all the docker containers
+  - When mover is done
+    - Set tunable `reconstruct write` to `auto` so disks can spin down again
+    - Start all the docker containers that were active before
 - If mover is running do nothing
 - If cache usage is below 80% do nothing
 
