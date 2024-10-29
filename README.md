@@ -27,6 +27,7 @@ This is my notes to (try to) make an efficient unraid server using Gigabyte B760
 - ~~Debug X710-DA2 C6 to achieve C10~~
 - Debug pcie 16x power saving problems
 - ~~Add new samsung SSD M2 cache~~
+- Add list of apps
 
 ## Setup
 
