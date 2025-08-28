@@ -398,3 +398,12 @@ I want to thank every person that shared his/her knowledge with the rest of us. 
 - https://forums.unraid.net/topic/156160-gigabyte-b760m-ds3h-ddr4-verschiedene-messungen-werte/#comment-1392769
 - https://docs.phil-barker.com/posts/upgrading-ASM1166-firmware-for-unraid/
 - https://gist.github.com/mietzen/736583d37a1d370273c0775aaaa57aa5
+
+
+
+
+
+
+# Notes
+## Upgrading BIOS Gigabyte B760-DS3H-DDR4
+Put the old USB2 stick in the second right port of the PS/2. Double click the file name in the Q-Flash. Source https://www.reddit.com/r/gigabyte/comments/1bhhdym/invalid_bios_image_and_cant_read_file_errors/
