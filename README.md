@@ -337,7 +337,7 @@ lspci -vv | awk '/ASPM/{print $0}' RS= | grep --color -P '(^[a-z0-9:.]+|ASPM )'
 		LnkCtl:	ASPM L1 Enabled; RCB 64 bytes, LnkDisable- CommClk+
 ```
 
-Use [ASPM Helper](https://github.com/alturismo/unraid-aspm-helper) to check and activate the correct ASPM level.
+Use [ASPM Helper](https://github.com/alturismo/unraid-aspm-helper) to check and activate the correct ASPM level. I had to activate level 3 manually for the `ASM1166`.
 
 <img width="2488" height="138" alt="image" src="https://github.com/user-attachments/assets/b6754fcd-b80f-4f12-b93c-482a9bcb2a63" />
 
