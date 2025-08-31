@@ -443,7 +443,7 @@ config:
 | Test number | Software | Hardware  | max C-state | Idle power usage estimation (W) | Comments |
 |:-----------:|:--------:|-----------|:-----------:|:-------------------------------:|----------|
 |A| Unraid 7.1.4 | config | C10 | 22 | Idle, HD spindown, no Docker |
-|A| Unraid 7.1.4 | config | C10 | 45 | HD on, Docker |
+|B| Unraid 7.1.4 | config | C10 | 45 | HD on, Docker |
 
 #### Comment
 
