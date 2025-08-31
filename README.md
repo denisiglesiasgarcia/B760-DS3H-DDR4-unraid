@@ -238,7 +238,7 @@ Activate auto-tune
 powertop --auto-tune
 ```
 
-Or use the recommendations of the forum user mgutt instead of `powertop --auto-tune` [Source](https://forums.unraid.net/topic/98070-reduce-power-consumption-with-powertop/). Both of them work fine.
+Or use his recommendations instead of `powertop --auto-tune` [Source](https://forums.unraid.net/topic/98070-reduce-power-consumption-with-powertop/). Both of them work fine.
 
 <details>
 
