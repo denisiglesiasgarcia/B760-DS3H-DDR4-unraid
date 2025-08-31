@@ -35,15 +35,16 @@ This is my notes to (try to) make an efficient unraid server using Gigabyte B760
 
 Power meter
 
-- Steffen [link](https://www.digitec.ch/fr/s1/product/steffen-appareil-de-mesure-denergie-numerique-ip20-compteur-de-courant-5807865)
+- [Steffen](https://www.digitec.ch/fr/s1/product/steffen-appareil-de-mesure-denergie-numerique-ip20-compteur-de-courant-5807865)
+- [Tasmota generic smart meter](https://www.athom.tech/blank-1/tasmota-switzerland-plug)
 
 Software:
 
-- Unraid 6.12.13
+- Unraid 7.1.4
 
 Hardware:
 
-- Gigabyte B760 DS3H DDR4 BIOS ~~F10d~~ *F11* [link](https://www.gigabyte.com/Motherboard/B760-DS3H-DDR4-rev-10#kf)
+- Gigabyte B760 DS3H DDR4 BIOS *F13* [link](https://www.gigabyte.com/Motherboard/B760-DS3H-DDR4-rev-10#kf)
 - i5-13500
 - 32Gb DDR4 3200
 - Add-on cards
@@ -54,15 +55,12 @@ Hardware:
     - Used this [tutorial](https://docs.phil-barker.com/posts/upgrading-ASM1166-firmware-for-unraid/) to activate all power saving functionalities in that card
     - [ebay](https://www.ebay.fr/itm/355366723386)
 - Storage
-  - Samsung SSD 970 EVO Plus 500GB M.2 as cache for appdata/system
-  - Samsung SSD 990 Pro 2TB M.2 as cache for the rest
-  - 2x Seagate Exos X16 14TB as parity
-  - 4x Toshiba N300 6TB
-  - 2x Seagate Desktop 6TB
+  - Samsung SSD 990 Pro 2TB M.2 as cache
+  - 1x Seagate Exos X16 14TB as parity
+  - 2x Seagate Exos X16 14TB
+  - 2x Toshiba N300 6TB
 - Ventilation
-  - 3x Fractal design 140mm 3-pin
-  - 4x Be Quiet Pure Wings 2 4-pin PWM (one for the CPU)
-  - Everything except the CPU is connected to a board that is integrated in the computer case [Fractal Design Meshify 2 XL](https://www.fractal-design.com/products/cases/meshify/meshify-2-xl-dark-tempered-glass/light-tempered-glass/). The main advantage is that it regulates the voltage of the 3-pin and 4-pin fans.
+  - 5x Be Quiet Pure Wings 2 4-pin PWM (one for the CPU)
 - PSU
   - Seasonic Focus PX (750 W)
 
@@ -101,9 +99,6 @@ I did not like the way mover was being scheduled. I wanted:
 - If mover is running do nothing
 - If cache usage is below 80% do nothing
 
-> [!WARNING]  
-> This works fine in 6.12.13, but in the 7.0.0-beta3 *enabling Turbo Write* does not work. When i update to the newer version i will fix this script.
-
 I run hourly this script using the plugin `User scripts`. There is 2 things to adjust:
 
 - The path to the cache disk in function `get_cache_usage`. Set to `/mnt/cache`
@@ -116,7 +111,7 @@ I run hourly this script using the plugin `User scripts`. There is 2 things to a
 ```bash
 #!/bin/bash
 
-# Function to get cache usage percentage. Change cache path if necessary.
+# Function to get cache usage percentage
 get_cache_usage() {
     df -h /mnt/cache | awk 'NR==2 {print $5}' | tr -d '%'
 }
@@ -224,9 +219,13 @@ Replaced by Samsung 990 Pro 2TB
 
 ### Powertop usage
 
-Install powertop using `nerd tools` in Apps
+`nerd tools` is deprecated, use instead the script of [@mgutt](https://github.com/mgutt/)
 
-![image](https://github.com/user-attachments/assets/c36a4c92-bbbf-4adb-a283-46248e2f9f56)
+```bash
+mkdir /boot/extra
+cd /boot/extra
+wget https://github.com/mgutt/unraid-packages/raw/main/6.11.0/powertop-2.15-x86_64-1.txz
+```
 
 Activate auto-tune
 
@@ -234,7 +233,7 @@ Activate auto-tune
 powertop --auto-tune
 ```
 
-Or use the recommendations of the forum user mgutt instead of `powertop --auto-tune` [Source](https://forums.unraid.net/topic/98070-reduce-power-consumption-with-powertop/)
+Or use the recommendations of the forum user mgutt instead of `powertop --auto-tune` [Source](https://forums.unraid.net/topic/98070-reduce-power-consumption-with-powertop/). Both of them work fine.
 
 <details>
 
@@ -307,6 +306,39 @@ Check ASPM status
 ```bash
 lspci -vv | awk '/ASPM/{print $0}' RS= | grep --color -P '(^[a-z0-9:.]+|ASPM )'
 ```
+
+```bash
+0000:00:1c.0 PCI bridge: Intel Corporation Raptor Lake PCI Express Root Port #1 (rev 11) (prog-if 00 [Normal decode])
+		LnkCap:	Port #1, Speed 8GT/s, Width x1, ASPM L0s L1, Exit Latency L0s <1us, L1 <4us
+		LnkCtl:	ASPM L0s L1 Enabled; RCB 64 bytes, LnkDisable- CommClk-
+0000:00:1c.2 PCI bridge: Intel Corporation Raptor Point-S PCH - PCI Express Root Port 3 (rev 11) (prog-if 00 [Normal decode])
+		LnkCap:	Port #3, Speed 8GT/s, Width x1, ASPM L1, Exit Latency L1 <64us
+		LnkCtl:	ASPM L1 Enabled; RCB 64 bytes, LnkDisable+ CommClk+
+0000:00:1c.3 PCI bridge: Intel Corporation Raptor Lake PCI Express Root Port #4 (rev 11) (prog-if 00 [Normal decode])
+		LnkCap:	Port #4, Speed 8GT/s, Width x1, ASPM L1, Exit Latency L1 <64us
+		LnkCtl:	ASPM L1 Enabled; RCB 64 bytes, LnkDisable- CommClk+
+0000:00:1c.6 PCI bridge: Intel Corporation Device 7a3e (rev 11) (prog-if 00 [Normal decode])
+		LnkCap:	Port #7, Speed 8GT/s, Width x1, ASPM L1, Exit Latency L1 <64us
+		LnkCtl:	ASPM L1 Enabled; RCB 64 bytes, LnkDisable- CommClk+
+0000:03:00.0 Ethernet controller: Intel Corporation Ethernet Controller X710 for 10GbE SFP+ (rev 01)
+		LnkCap:	Port #0, Speed 8GT/s, Width x1, ASPM L1, Exit Latency L1 <16us
+		LnkCtl:	ASPM L1 Enabled; RCB 64 bytes, LnkDisable- CommClk+
+0000:03:00.1 Ethernet controller: Intel Corporation Ethernet Controller X710 for 10GbE SFP+ (rev 01)
+		LnkCap:	Port #0, Speed 8GT/s, Width x1, ASPM L1, Exit Latency L1 <16us
+		LnkCtl:	ASPM L1 Enabled; RCB 64 bytes, LnkDisable- CommClk+
+0000:04:00.0 SATA controller: ASMedia Technology Inc. ASM1166 Serial ATA Controller (rev 02) (prog-if 01 [AHCI 1.0])
+		LnkCap:	Port #0, Speed 8GT/s, Width x2, ASPM L0s L1, Exit Latency L0s <4us, L1 <64us
+		LnkCtl:	ASPM L0s L1 Enabled; RCB 64 bytes, LnkDisable- CommClk+
+10000:e0:1a.0 PCI bridge: Intel Corporation Raptor Lake PCI Express Root Port #25 (rev 11) (prog-if 00 [Normal decode])
+		LnkCap:	Port #25, Speed 8GT/s, Width x4, ASPM L1, Exit Latency L1 <64us
+		LnkCtl:	ASPM L1 Enabled; RCB 64 bytes, LnkDisable- CommClk+
+10000:e1:00.0 Non-Volatile memory controller: Samsung Electronics Co Ltd NVMe SSD Controller S4LV008[Pascal] (prog-if 02 [NVM Express])
+		LnkCap:	Port #0, Speed 16GT/s, Width x4, ASPM L1, Exit Latency L1 <64us
+		LnkCtl:	ASPM L1 Enabled; RCB 64 bytes, LnkDisable- CommClk+
+```
+
+Use [ASPM Helper](https://github.com/alturismo/unraid-aspm-helper) to check and activate the correct ASPM level.
+
 
 ## Estimation of power consumption and C-states
 
