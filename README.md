@@ -339,6 +339,8 @@ lspci -vv | awk '/ASPM/{print $0}' RS= | grep --color -P '(^[a-z0-9:.]+|ASPM )'
 
 Use [ASPM Helper](https://github.com/alturismo/unraid-aspm-helper) to check and activate the correct ASPM level.
 
+<img width="2488" height="138" alt="image" src="https://github.com/user-attachments/assets/b6754fcd-b80f-4f12-b93c-482a9bcb2a63" />
+
 
 ## Estimation of power consumption and C-states
 
