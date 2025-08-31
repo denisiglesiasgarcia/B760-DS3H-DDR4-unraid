@@ -8,7 +8,7 @@ This is my notes to (try to) make an efficient unraid server using Gigabyte B760
 - [Setup](#setup)
   - [Bios settings](#bios-settings)
   - [Mover settings](#mover-settings)
-  - [What i tried and it did not work as expected](#what-i-tried-and-it-did-not-work-as-expected)
+  - [What I tried and it did not work as expected](#what-i-tried-and-it-did-not-work-as-expected)
     - [IBM ServeRAID M1015](#ibm-serveraid-m1015)
     - [Solarflare 10GB SF329-9021-R7.4](#solarflare-10gb-sf329-9021-r74)
     - [Kingston NV2 4TB M.2 SSD](#kingston-nv2-4tb-m2-ssd)
@@ -18,6 +18,11 @@ This is my notes to (try to) make an efficient unraid server using Gigabyte B760
   - [Realtek ethernet](#realtek-ethernet)
   - [ASPM](#aspm)
 - [Estimation of power consumption and C-states](#estimation-of-power-consumption-and-c-states)
+  - [Unraid 6.12.13 (old)](#unraid-61213-old)
+  - [Unraid 7.1.4 (20250831)](#unraid-714-20250831)
+  - [Other power saving strategies](#other-power-saving-strategies)
+- [Notes for my future self](#notes-for-my-future-self)
+  - [Upgrading BIOS Gigabyte B760-DS3H-DDR4](#upgrading-bios-gigabyte-b760-ds3h-ddr4)
 - [Sources](#sources)
 
 ## TODO list
@@ -29,7 +34,7 @@ This is my notes to (try to) make an efficient unraid server using Gigabyte B760
 - ~~Add new samsung SSD M2 cache~~
 - Add list of apps
 - Add motivation chapter
-- Add more information about what is C-States and this things
+- Add more information about what is C-States and ASPM
 
 ## Setup
 
@@ -309,7 +314,7 @@ lspci -vv | awk '/ASPM/{print $0}' RS= | grep --color -P '(^[a-z0-9:.]+|ASPM )'
 
 ```bash
 0000:00:1c.0 PCI bridge: Intel Corporation Raptor Lake PCI Express Root Port #1 (rev 11) (prog-if 00 [Normal decode])
-		LnkCap:	Port #1, Speed 8GT/s, Width x1, ASPM L0s L1, Exit Latency L0s <1us, L1 <4us
+	  LnkCap:	Port #1, Speed 8GT/s, Width x1, ASPM L0s L1, Exit Latency L0s <1us, L1 <4us
 		LnkCtl:	ASPM L0s L1 Enabled; RCB 64 bytes, LnkDisable- CommClk-
 0000:00:1c.2 PCI bridge: Intel Corporation Raptor Point-S PCH - PCI Express Root Port 3 (rev 11) (prog-if 00 [Normal decode])
 		LnkCap:	Port #3, Speed 8GT/s, Width x1, ASPM L1, Exit Latency L1 <64us
@@ -341,8 +346,9 @@ Use [ASPM Helper](https://github.com/alturismo/unraid-aspm-helper) to check and 
 
 <img width="2488" height="138" alt="image" src="https://github.com/user-attachments/assets/b6754fcd-b80f-4f12-b93c-482a9bcb2a63" />
 
-
 ## Estimation of power consumption and C-states
+
+### Unraid 6.12.13 (old)
 
 base = PSU + Gigabyte B760 DS3H DDR4 BIOS + 1x Be Quiet Pure Wings 2 4-pin PWM
 
@@ -422,22 +428,141 @@ base = PSU + Gigabyte B760 DS3H DDR4 BIOS + 1x Be Quiet Pure Wings 2 4-pin PWM
 
 </details>
 
+### Unraid 7.1.4 (20250831)
+
+config:
+
+- PSU
+- Gigabyte B760 DS3H DDR4 BIOS F13
+- 5x Be Quiet Pure Wings 2 4-pin PWM
+- Samsung SSD 990 Pro 2TB M.2 as cache
+- 1x Seagate Exos X16 14TB as parity
+- 2x Seagate Exos X16 14TB
+- 2x Toshiba N300 6TB
+
+| Test number | Software | Hardware  | max C-state | Idle power usage estimation (W) | Comments |
+|:-----------:|:--------:|-----------|:-----------:|:-------------------------------:|----------|
+|A| Unraid 7.1.4 | config | C10 | 22 | Idle, HD spindown, no Docker |
+|A| Unraid 7.1.4 | config | C10 | 45 | HD on, Docker |
+
+#### Comment
+
+I removed the NVMe drive connected to the CPU (top) and keep the one connected to the chipset (bottom) to improve power efficiency. According to [Matt Gadient's research](https://mattgadient.com/7-watts-idle-on-intel-12th-13th-gen-the-foundation-for-building-a-low-power-server-nas/), connecting NVMe drives to the chipset enables more advanced ASPM (Active State Power Management) states.
+
+CPU-connected NVMe slot:
+
+- ASPM L0s and L1 only
+
+Chipset-connected NVMe slot:
+
+- ASPM L0s, L1.1, and L1.2 support
+
+```bash
+lspci -vvv
+```
+
+```bash
+# Samsung SSD 990 Pro 2TB
+Capabilities: [1cc v1] L1 PM Substates
+  L1SubCap: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+ ASPM_L1.1+ L1_PM_Substates+
+      PortCommonModeRestoreTime=10us PortTPowerOnTime=10us
+  L1SubCtl1: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+ ASPM_L1.1+
+        T_CommonMode=0us LTR1.2_Threshold=108544ns
+  L1SubCtl2: T_PwrOn=42us
+```
+
+It did work but i don't know if it was already activated or not.
+
+## Other power saving strategies
+
+The tasmota smart meter does have a scheduler so i can turn it off after a cron job shuts down the server.
+
+> [!WARNING]  
+> The script needs to be improved because it does not control the state of the smart plug if there is a parity sync or mover is doing his thing.
+
+```bash
+#!/bin/bash
+# UnRAID Auto Shutdown Script
+# Waits for mover and parity operations to complete before shutdown
+
+# Function to check if mover is running
+is_mover_running() {
+    pgrep -f "/usr/local/sbin/mover" > /dev/null
+}
+
+# Function to check if parity sync/check is running
+is_parity_running() {
+    # Check /proc/mdstat for any rebuild, check, or sync operations
+    grep -E "(rebuild|check|resync)" /proc/mdstat > /dev/null 2>&1
+}
+
+# Function to get parity operation status
+get_parity_status() {
+    if grep -q "rebuild" /proc/mdstat; then
+        echo "parity rebuild"
+    elif grep -q "check" /proc/mdstat; then
+        echo "parity check"
+    elif grep -q "resync" /proc/mdstat; then
+        echo "parity resync"
+    else
+        echo "none"
+    fi
+}
+
+# Function to wait for operations to complete
+wait_for_operations() {
+    local waiting=false
+    
+    while is_mover_running || is_parity_running; do
+        if ! $waiting; then
+            echo "Waiting for operations to complete before shutdown..."
+            waiting=true
+        fi
+        
+        if is_mover_running; then
+            echo "$(date): Mover is still running..."
+        fi
+        
+        if is_parity_running; then
+            local status=$(get_parity_status)
+            echo "$(date): Parity operation ($status) is still running..."
+        fi
+        
+        sleep 300  # Check every minute
+    done
+    
+    if $waiting; then
+        echo "$(date): All operations completed!"
+    fi
+}
+
+# Main script execution
+echo "$(date): Starting shutdown sequence..."
+
+# Wait for any running operations to complete
+wait_for_operations
+
+# Schedule shutdown
+echo "$(date): Scheduling shutdown in 15 minutes..."
+/sbin/shutdown -h +15 "Automated weekday shutdown - 15 minute warning"
+
+echo "$(date): Shutdown scheduled. Script completed."
+```
+
+## Notes for my future self
+
+### Upgrading BIOS Gigabyte B760-DS3H-DDR4
+
+Put the old USB2 stick in the second right port of the PS/2. Double click the file name in the Q-Flash. [Source](https://www.reddit.com/r/gigabyte/comments/1bhhdym/invalid_bios_image_and_cant_read_file_errors/)
+
 ## Sources
 
 I want to thank every person that shared his/her knowledge with the rest of us. This is the sources i used:
 
-- https://forums.unraid.net/topic/98070-reduce-power-consumption-with-powertop/
-- https://forums.unraid.net/topic/156160-gigabyte-b760m-ds3h-ddr4-verschiedene-messungen-werte/
-- https://forums.unraid.net/topic/141770-asm1166-flashen-mit-der-firmware-der-silverstone-ecs06-karte-sata-kontroller/
-- https://forums.unraid.net/topic/156160-gigabyte-b760m-ds3h-ddr4-verschiedene-messungen-werte/#comment-1392769
-- https://docs.phil-barker.com/posts/upgrading-ASM1166-firmware-for-unraid/
-- https://gist.github.com/mietzen/736583d37a1d370273c0775aaaa57aa5
-
-
-
-
-
-
-# Notes
-## Upgrading BIOS Gigabyte B760-DS3H-DDR4
-Put the old USB2 stick in the second right port of the PS/2. Double click the file name in the Q-Flash. Source https://www.reddit.com/r/gigabyte/comments/1bhhdym/invalid_bios_image_and_cant_read_file_errors/
+- <https://forums.unraid.net/topic/98070-reduce-power-consumption-with-powertop/>
+- <https://forums.unraid.net/topic/156160-gigabyte-b760m-ds3h-ddr4-verschiedene-messungen-werte/>
+- <https://forums.unraid.net/topic/141770-asm1166-flashen-mit-der-firmware-der-silverstone-ecs06-karte-sata-kontroller/>
+- <https://forums.unraid.net/topic/156160-gigabyte-b760m-ds3h-ddr4-verschiedene-messungen-werte/#comment-1392769>
+- <https://docs.phil-barker.com/posts/upgrading-ASM1166-firmware-for-unraid/>
+- <https://gist.github.com/mietzen/736583d37a1d370273c0775aaaa57aa5>
+- <https://mattgadient.com/7-watts-idle-on-intel-12th-13th-gen-the-foundation-for-building-a-low-power-server-nas/>
